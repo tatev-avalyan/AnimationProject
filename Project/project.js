@@ -25,20 +25,20 @@ function animation() {
   const smallWidth = parseInt(small.style.width)
   const smallHeight = parseInt(small.style.height)
 
-  if (smallTop < 0){ 
-
-  } else if(smallTop + smallHeight > h) {
-
-  } else if( smallLeft < 0) {
-
-  }else if (smallLeft + smallWidth > w) {
-    
+  if (smallTop < 0) {
+    console.log('top < 0')
+  } else if (smallTop + smallHeight > h) {
+    console.log('top > windowHeight')
+  } else if (smallLeft < 0) {
+    console.log('left < 0')
+  } else if (smallLeft + smallWidth > w) {
+    console.log('left > windowWidth')
     // smallLeft += smallLeft * Math.sin(Math.random() * 90)
     // smallTop += smallTop * Math.sin(Math.random() * 90)
-   
 
-  } 
- // requestAnimationFrame(animation)
+
+  }
+  requestAnimationFrame(animation)
 
 }
 animation()
