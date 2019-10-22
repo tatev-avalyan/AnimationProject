@@ -1,44 +1,67 @@
-let div = document.getElementsByTagName('div')
+let div = document.getElementById('myDiv')
 
-const small = div[0]
-small.style.height = '150px'
-small.style.width = '150px'
-small.style.border = 'solid 1px lightblue'
-small.style.borderRadius = '100px'
-small.style.background = 'pink'
-small.style.position = 'absolute'
-small.style.left = '600px'
-small.style.top = '540px'
+const w = window.innerWidth
+const h = window.innerHeight
+const divWidth = parseInt(div.style.width)
+const divHeight = parseInt(div.style.height)
+let divleft = parseInt(div.style.left)
+let divTop = parseInt(div.style.top)
+let left = true
+let top = true
 
 
-document.addEventListener('mousemove', getMousePosition);
-function getMousePosition(event) {
-  small.style.left = event.clientX - 75 + 'px'
-  small.style.top = event.clientY - 75 + 'px'
+// document.addEventListener('mousedown',  function () {
+
+//   document.addEventListener('mousemove', function onMouseMove(event) {
+
+//     div.style.left = event.clientX - divWidth / 2 + 'px'
+//     div.style.top = event.clientY - divHeight / 2 + 'px'
+
+//     // document.addEventListener('mouseup')
+//   })
+// })
+
+div.addEventListener('mousedown', onMouseDown)
+
+function onMouseDown() {
+  document.addEventListener('mousemove', onMouseMove)
+  document.addEventListener('mouseup', onMouseUp)
 }
-function animation() {
 
-  const w = window.innerWidth;
-  const h = window.innerHeight;
-  let smallTop = parseInt(small.style.top)
-  let smallLeft = parseInt(small.style.left)
-  const smallWidth = parseInt(small.style.width)
-  const smallHeight = parseInt(small.style.height)
-
-  if (smallTop < 0){ 
-
-  } else if(smallTop + smallHeight > h) {
-
-  } else if( smallLeft < 0) {
-
-  }else if (smallLeft + smallWidth > w) {
-    
-    // smallLeft += smallLeft * Math.sin(Math.random() * 90)
-    // smallTop += smallTop * Math.sin(Math.random() * 90)
-   
-
-  } 
- // requestAnimationFrame(animation)
-
+function onMouseUp() {
+  document.removeEventListener('mousemove', onMouseMove)
 }
-animation()
+
+function onMouseMove() {
+  div.style.left = event.clientX - divWidth / 2 + 'px'
+  div.style.top = event.clientY - divHeight / 2 + 'px'
+}
+
+
+
+function moveDiv() {
+
+  if (divleft >= w - divWidth) left = false;
+  if (divleft <= 0) left = true;
+
+  if (left) {
+    divleft += 5
+    div.style.left = divleft + "px";
+  } else {
+    divleft -= 5
+    div.style.left = divleft + "px"
+  }
+
+  if (divTop >= h - divHeight) top = false;
+  if (divTop <= 0) top = true;
+
+  if (top) {
+    divTop += 5
+    div.style.top = divTop + 'px'
+  } else {
+    divTop -= 5
+    div.style.top = divTop + 'px'
+  }
+
+  requestAnimationFrame(moveDiv)
+}
