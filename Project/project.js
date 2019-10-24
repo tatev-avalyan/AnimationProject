@@ -6,86 +6,95 @@ const divWidth = parseInt(div.style.width)
 const divHeight = parseInt(div.style.height)
 let divleft = parseInt(div.style.left)
 let divTop = parseInt(div.style.top)
-let left = true
-let top = true
-
+let requestID;
+let start = 0
+let end = 0
+let speed = 0
+let road = 0
 
 div.addEventListener('mousedown', onMouseDown)
 
-function onMouseDown() {
+
+const pt1 = { x: 0, y: 0 }
+const pt2 = { x: 0, y: 0 }
+let vel = { x: 0, y: 0 }
+
+
+
+
+function onMouseDown(event) {
+  cancelAnimationFrame(requestID);
+
   document.addEventListener('mousemove', onMouseMove)
   document.addEventListener('mouseup', onMouseUp)
 
+  pt1.x = event.clientX
+  pt1.y = event.clientY
+  pt2.x = event.clientX
+  pt2.y = event.clientY
 }
 
-let pt2 = { x: 0, y: 0 }
-function onMouseUp(event) {
-  pt2 = {
-    x: event.clientX,
-    y: event.clientY
-  }
-  document.removeEventListener('mousemove', onMouseMove)
-  console.log(pt2)
-  update()
-  return pt2
-}
 
-function onMouseMove() {
+function onMouseMove(event) {
+
   div.style.left = event.clientX - divWidth / 2 + 'px'
   div.style.top = event.clientY - divHeight / 2 + 'px'
 
+  pt1.x = pt2.x
+  pt1.y = pt2.y
+
+  pt2.x = event.clientX
+  pt2.y = event.clientY
+
+  start = Date.now()
+  console.log('start = ' + start)
 }
 
-let pt1 = {
-  x: divleft,
-  y: divTop
+function onMouseUp(event) {
+  document.removeEventListener('mousemove', onMouseMove)
+  document.removeEventListener('mouseup', onMouseUp)
+
+  divleft = event.clientX - divWidth / 2
+  divTop = event.clientY - divHeight / 2
+
+  let angle = getAngle(pt1, pt2)
+  vel = getVelocityFromAngle(angle)
+  update()
+  end = Date.now()
+  console.log('end = ' + end)
+  speed = getSpeed()
+  return pt2
 }
 
 function getAngle(pt1, pt2) {
-  return Math.atan((pt2.y - pt1.y) / (pt2.x - pt1.x)) * (180 / Math.PI)
+  return Math.atan2((pt2.y - pt1.y), (pt2.x - pt1.x))
 }
 
-
-let velX = 0
-let velY = 0
 function getVelocityFromAngle(angle) {
-  velX = Math.cos(angle)
-  velY = Math.sin(angle)
-
-  return { x: velX, y: velY }
+  return { x: Math.cos(angle), y: Math.sin(angle) }
 }
-//console.log(getAngle(pt1, pt2))
 
-console.warn(getVelocityFromAngle(Math.PI/6))
+function getSpeed() {
+
+  time = end - start;
+  road = Math.sqrt(Math.pow((pt1.x - pt2.x), 2) + Math.pow((pt1.y - pt2.y), 2))
+  const speed = road / time
+
+  return speed
+}
 
 
 function update() {
+  divleft += vel.x * speed
+  divTop += vel.y * speed
 
-  if (divleft >= w - divWidth) left = false;
-  if (divleft <= 0) left = true;
+  div.style.left = divleft + "px"
+  div.style.top = divTop + "px"
 
-  if (left) {
-    divleft += 15 * velX
-    div.style.left = divleft + "px";
-  } else {
-    divleft -= 15 * velX
-    div.style.left = divleft + "px"
+  if (divleft > w - divWidth || divleft < 0) vel.x *= -1
+  if (divTop > h - divHeight || divTop < 0) vel.y *= -1
 
-  }
-
-  if (divTop >= h - divHeight) top = false;
-  if (divTop <= 0) top = true;
-
-  if (top) {
-    divTop += 15 * velY
-    div.style.top = divTop + 'px'
-  } else {
-    divTop -= 15 * velY
-    div.style.top = divTop + 'px'
-  }
-
-  requestAnimationFrame(update)
-
+  requestID = requestAnimationFrame(update)
 }
 
 
